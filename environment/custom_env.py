@@ -77,7 +77,14 @@ CRITICAL_LIQUIDITY = 0.15          # fund insolvency threshold
 SUSTAINABILITY_TARGET = 1.5        # success if fund reaches 1.5x base capital
 
 STARTER_LOAN_AMOUNT = 2_000.0
-INTEREST_RATE = 0.08               # simple interest applied on repayment
+INTEREST_RATE = 0.18               # simple interest applied on repayment
+
+# On default, the group recovers part of the loss from the member's own
+# savings contribution - this is how real savings groups actually work
+# (a defaulted loan is offset against the member's savings balance), and it
+# ties the reward economics directly to an existing observation feature
+# (member_relative_savings), rather than treating default as a total loss.
+DEFAULT_RECOVERY_FRACTION = 0.55
 
 REPAYMENT_REWARD_SCALE = 1.2
 DEFAULT_PENALTY_SCALE = 2.0
@@ -250,8 +257,10 @@ class MicroloanAllocationEnv(gym.Env):
                 )
                 member.repaid_count += 1
             else:
-                self.fund_capital -= loan_size
-                reward -= DEFAULT_PENALTY_SCALE * (loan_size / 10_000)
+                recovery = min(loan_size, member.savings_balance * DEFAULT_RECOVERY_FRACTION)
+                net_loss = loan_size - recovery
+                self.fund_capital -= net_loss
+                reward -= DEFAULT_PENALTY_SCALE * (net_loss / 10_000)
                 self.default_history.append(1)
                 self.last_outcome = "defaulted"
                 member.repayment_score = float(
