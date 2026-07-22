@@ -1,0 +1,28 @@
+[project]
+name = "jok-kur-rl-summative"
+version = "0.1.0"
+description = "Mission-based RL summative: a microloan allocation agent for a fintech savings-group fund, comparing DQN, REINFORCE, PPO, and A2C."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.139.2",
+    "glfw>=2.10.2",
+    "gymnasium>=1.3.0",
+    "matplotlib>=3.11.1",
+    "numpy>=2.5.1",
+    "pandas>=3.0.3",
+    "pydantic>=2.13.4",
+    "pyglet>=2.1.15",
+    "pyopengl>=3.1.10",
+    "pyopengl-accelerate>=3.1.10",
+    "stable-baselines3[extra]>=2.9.0",
+    "torch>=2.13.0",
+    "uvicorn>=0.51.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
